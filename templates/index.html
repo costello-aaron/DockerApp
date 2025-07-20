@@ -1,21 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/index.css">
+
     <title>Simple Weather App</title>
+
 </head>
 <body>
     <h1>Weather Info (NWS)</h1>
     <form method="POST">
-        <label>Latitude: <input name="lat" required></label>
+        <!-- <label>Latitude: <input name="lat" required></label>
+        <br>
         <label>Longitude: <input name="lon" required></label>
+        <br> -->
+        <label>City:
+            <input name="city" placeholder="Name of City" required>
+        </label>
+        <br><br>
         <button type="submit">Get Forecast</button>
     </form>
 
-    {% if weather %}
-        <h2>{{ weather.name }}</h2>
-        <p>{{ weather.detailedForecast }}</p>
-    {% elif error %}
-        <p style="color: red;">Error: {{ error }}</p>
+
+    <div>
+        {% if weather %}
+            <h2>Weather in {{city}} </h2>
+
+            <div class="info-block">
+                <div class="info-title">Current Temperature</div>
+                
+                <div class="temp-container">
+                    <!-- NOTE: CHANGE IMG BASED ON TEMP -->
+                    <img src="../static/images/sunny.png">
+
+                    <ul>
+                        <li>{{ weather.temperature }} °F</li>
+                        <li>{{ weather.temperature | to_celsius }} °C</li>
+                    </ul>
+
+                </div>
+            </div>
+        {% endif %}
+
+
+    {% if weekly_weather %}
+        <div class="weather block">
+            <h2>7-Day Forecast</h2>
+            <div class="weekly-forecast">
+                {% for day in weekly_weather %}
+                    <div class="day-card">
+                        <div class="day-name">{{ day.day_name }}</div>
+                        <div class="date">{{ day.date.strftime('%m/%d') }}</div>
+                        {% if day.high_temp is not none %}
+                            <div class="temperature high-temp">High: {{ day.high_temp }}°F / {{ day.high_temp | to_celsius }}°C</div>
+                        {% else %}
+                            <div class="temperature high-temp">High: {{ weather.temperature }} °F / {{ weather.temperature | to_celsius }}°C</div>
+                        {% endif %}
+                        {% if day.low_temp is not none %}
+                            <div class="temperature low-temp">Low: {{ day.low_temp }}°F / {{ day.low_temp | to_celsius }}°C</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <div class="error">
+            <strong>Error:</strong> {{ error }}
+        </div>
     {% endif %}
 </body>
 </html>

@@ -12,10 +12,10 @@
     <link rel="stylesheet" href="../static/index.css">
 
     <title>Simple Weather App</title>
+
 </head>
 <body>
-    <br>
-    <h1>Weather App</h1>
+    <h1>Weather Info (NWS)</h1>
     <form method="POST">
         <!-- <label>Latitude: <input name="lat" required></label>
         <br>
@@ -28,93 +28,71 @@
         <button type="submit">Get Forecast</button>
     </form>
 
-    <br>
 
     <div>
         {% if weather %}
             <h2>Weather in {{city}} </h2>
 
             <div class="info-block">
-                <div class="info-title">Temperature</div>
+                <div class="info-title">Current Temperature</div>
                 
                 <div class="temp-container">
-                    <!-- NOTE: CHANGE IMG BASED ON TEMP -->
-                    <img src="../static/images/sunny.png">
-
+                    <img src="{{ weather.icon }}">
                     <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
+                        <li>{{ weather.shortForecast }}</li>
+                        <li class="temperature">{{ weather.temperature }} °F / {{ weather.temperature | to_celsius }} °C</li>
                     </ul>
 
                 </div>
             </div>
-
-            <!-- FIXME -->
-            <div class="weather-container">
-                
-                <div class="dayofweek-container">
-                    <p>SUN</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-                
-                <div class="dayofweek-container">
-                    <p>MON</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-
-                <div class="dayofweek-container">
-                    <p>TUE</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-
-                <div class="dayofweek-container">
-                    <p>WED</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-
-                <div class="dayofweek-container">
-                    <p>THUR</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-
-                <div class="dayofweek-container">
-                    <p>FRI</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-
-                <div class="dayofweek-container">
-                    <p>SAT</p>
-                    <ul>
-                        <li>{{ weather.temperature }} °F</li>
-                        <li>{{ weather.temperature | to_celsius }} °C</li>
-                    </ul>
-                </div>
-
-            </div>
-
-        {% elif error %}
-            <!-- error is not specified? -->
-            <p style="color: red;">Error: {{ error }}</p>
         {% endif %}
-    </div>
 
+    {% if hourly_weather %}
+        <div class="weather block">
+            <h2>Hourly Forecast</h2>
+            <div class="forecast">
+                {% for hour in hourly_weather %}
+                    <div class="card">
+                        <div class="card-name">{{ hour.time }}</div>
+                        <div class="card-icon"><img src="{{ hour.icon }}"></div>
+                        <li class="card-short-forecast">{{ hour.shortForecast }}</li>
+                        <li class="temperature">{{ hour.temperature }} °F / {{ hour.temperature | to_celsius }} °C</li>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if weekly_weather %}
+        <div class="weather block">
+            <h2>7-Day Forecast</h2>
+            <div class="forecast">
+                {% for day in weekly_weather %}
+                    <div class="card">
+                        <div class="card-name">{{ day.day_name }}</div>
+
+                        <div class="card-icon"><img src="{{ day.daily_icon }}"></div>
+                        <div class="card-short-forecast">{{ day.daily_short_forecast }}</div>
+
+                        <div class="date">{{ day.date.strftime('%m/%d') }}</div>
+                        {% if day.high_temp is not none %}
+                            <div class="temperature high-temp">High: {{ day.high_temp }}°F / {{ day.high_temp | to_celsius }}°C</div>
+                        {% else %}
+                            <div class="temperature high-temp">High: {{ weather.temperature }} °F / {{ weather.temperature | to_celsius }}°C</div>
+                        {% endif %}
+                        {% if day.low_temp is not none %}
+                            <div class="temperature low-temp">Low: {{ day.low_temp }}°F / {{ day.low_temp | to_celsius }}°C</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <div class="error">
+            <strong>Error:</strong> {{ error }}
+        </div>
+    {% endif %}
 </body>
 </html>

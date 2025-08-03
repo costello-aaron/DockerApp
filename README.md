@@ -72,7 +72,7 @@ sudo install minikube-linux-amd64 /usr/local/bin/minikube
 1. **Clone and navigate to the project**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/costello-aaron/DockerApp
    cd DockerApp
    ```
 
